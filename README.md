@@ -32,15 +32,15 @@ To run the code on your local machine
 - Component 1:
   - within `folders.go`.
     - We would like you to read through, and run, the code.
-    - Write some comments on what you think the code does.
-    - Suggest some improvements that can be made to the code.
+    - Write some comments on what you think the code does. 
+    - Suggest some improvements that can be made to the code. --> added my suggestions in suggestions.md
     - Implement any suggested improvements.
     - Write up some unit tests in `folders_test.go` for your new `GetAllFolders` method
 
 - Component 2:
   - Extend your improved code to now facilitate pagination.
   - You can copy over the existing methods into `folders_pagination.go` to get started.
-  - Write a short explanation of your chosen solution.
+  - Write a short explanation of your chosen solution. --> I have done this at the top of folders_pagination.go and written tests in folders_test.go
 
 ## What is pagination?
   - Pagination helps break down a large dataset into smaller chunks.
