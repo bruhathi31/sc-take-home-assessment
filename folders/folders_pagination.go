@@ -11,6 +11,7 @@ import (
 // - The pagination state is entierign contianed in the request token, eliminating any need for a server-side management
 // - Data retrieval is done efficiently, it relies on the FetchAllFoldersByOrgID to find all the folders, but it immediately slices the result based on the token
 // - I used simple token encoding, where a string representation of an integer index is used, but it can easily be enhanced with encryption or hashing for additional security in a production setting
+// - I have added tests for my pagination in folders_test.go
 
 // This can be adjusted based on desire
 const PageSize = 10
