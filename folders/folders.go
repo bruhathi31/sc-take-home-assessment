@@ -1,6 +1,7 @@
 package folders
 
 import (
+	"fmt"
 	"github.com/gofrs/uuid"
 )
 
@@ -12,34 +13,20 @@ import (
 // - A pointer to FetchFolderResponse containing the fetched folders
 // - An error, if any errors occured
 func GetAllFolders(req *FetchFolderRequest) (*FetchFolderResponse, error) {
-	// Variable declation block(unused variables)
-	var (
-		err error
-		f1  Folder
-		fs  []*Folder
-	)
-
-	// Initialise an empty slice of Folders
-	f := []Folder{}
+	// input validation check
+	if req == nil || req.OrgID == uuid.Nil {
+		return nil, fmt.Errorf("invalid request: missing organization ID")
+	}
 
 	// Fetch all folders for the given organisation
-	r, _ := FetchAllFoldersByOrgID(req.OrgID)
+	folders, err := FetchAllFoldersByOrgID(req.OrgID)
 
-	// Appending all the fetched folders (converting []*Folder to []Folder)
-	for k, v := range r {
-		f = append(f, *v)
+	// Error Handling
+	if err != nil {
+		return nil, fmt.Errorf("error fetching folders: %w", err)
 	}
 
-	// converting []Folder to []*Folder
-	var fp []*Folder
-	for k1, v1 := range f {
-		fp = append(fp, &v1)
-	}
-
-	// Intialising and returning the FetchFolderResponse
-	var ffr *FetchFolderResponse
-	ffr = &FetchFolderResponse{Folders: fp}
-	return ffr, nil
+	return &FetchFolderResponse{Folders: folders}, nil
 }
 
 // FetchAllFoldersByOrgID retrieves all folders for a specific organization ID
@@ -49,11 +36,27 @@ func GetAllFolders(req *FetchFolderRequest) (*FetchFolderResponse, error) {
 //   - A slice of pointers to Folder objects belonging to the specified organization
 //   - An error, if any errors occurred 
 func FetchAllFoldersByOrgID(orgID uuid.UUID) ([]*Folder, error) {
+
+	if orgID == uuid.Nil {
+        return nil, fmt.Errorf("invalid organization ID")
+    }
+
+	var recoveryError error
+
+	defer func() {
+        if r := recover(); r != nil {
+            recoveryError = fmt.Errorf("panic occurred: %v", r)
+        }
+    }()
+
+	if recoveryError != nil {
+		return nil, recoveryError
+	}
+
 	// Pointers to Folder objects by fetching data from the JSON file, sample.JSON
 	folders := GetSampleData()
-
 	
-	resFolder := []*Folder{}
+	resFolder := make([]*Folder, 0, len(folders))
 	for _, folder := range folders {
 		// Filter folders by the given organisiation
 		if folder.OrgId == orgID {

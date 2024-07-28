@@ -6,6 +6,7 @@ require (
 	github.com/gofrs/uuid v4.3.0+incompatible
 	github.com/lucasepe/codename v0.2.0
 	github.com/stretchr/testify v1.8.0
+	github.com/undefinedlabs/go-mpatch v1.0.7
 )
 
 require (
