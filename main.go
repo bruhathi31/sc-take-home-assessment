@@ -8,11 +8,12 @@ import (
 )
 
 func main() {
-	req := &folders.FetchFolderRequest{
+	req := &folders.PaginatedFetchFolderRequest{
 		OrgID: uuid.FromStringOrNil(folders.DefaultOrgID),
+		Token: "660",
 	}
 
-	res, err := folders.GetAllFolders(req)
+	res, err := folders.GetPaginatedFolders(req)
 	if err != nil {
 		fmt.Printf("%v", err)
 		return

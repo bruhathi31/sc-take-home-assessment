@@ -50,20 +50,71 @@ func Test_GetAllFolders(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
+}
 
-	// t.Run("Error - getSampleData has panic and function recovers", func(t *testing.T) {
-    //     // Override the getSampleData for this test
-    //     folders.getSampleData = func() []*folders.Folder {
-    //         panic("simulated panic")
-    //     }
+func Test_GetPaginatedFolders(t *testing.T) {
+	t.Run("Success Test - First Page", func(t *testing.T) {
+		req := &folders.PaginatedFetchFolderRequest{
+			OrgID: uuid.Must(uuid.FromString("c1556e17-b7c0-45a3-a6ae-9546248fb17a")),
+			Token: "",
+		}
 
-    //     req := &folders.FetchFolderRequest{
-    //         OrgID: uuid.Must(uuid.FromString("c1556e17-b7c0-45a3-a6ae-9546248fb17a")),
-    //     }
+		response, err := folders.GetPaginatedFolders(req)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.Equal(t, folders.PageSize, len(response.Folders))
+		assert.NotEmpty(t, response.Token)
+	})
 
-    //     response, err := folders.GetAllFolders(req)
-    //     assert.Error(t, err)
-    //     assert.Nil(t, response)
-    //     assert.Contains(t, err.Error(), "panic occurred")
-    // })
+	t.Run("Success Test - Second Page", func(t *testing.T) {
+		req := &folders.PaginatedFetchFolderRequest{
+			OrgID: uuid.Must(uuid.FromString("c1556e17-b7c0-45a3-a6ae-9546248fb17a")),
+			Token: "10",
+		}
+
+		response, err := folders.GetPaginatedFolders(req)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.Equal(t, folders.PageSize, len(response.Folders))
+		assert.NotEmpty(t, response.Token)
+	})
+
+	t.Run("Success Test - Last Page", func(t *testing.T) {
+		req := &folders.PaginatedFetchFolderRequest{
+			OrgID: uuid.Must(uuid.FromString("c1556e17-b7c0-45a3-a6ae-9546248fb17a")),
+			Token: "660",
+		}
+
+		response, err := folders.GetPaginatedFolders(req)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.Equal(t, 6, len(response.Folders))
+		assert.Empty(t, response.Token)
+	})
+
+	t.Run("Success Test - Org with Few Folders", func(t *testing.T) {
+		req := &folders.PaginatedFetchFolderRequest{
+			OrgID: uuid.Must(uuid.FromString("52214b35-f4da-461a-9f93-fbd3590e700f")),
+			Token: "",
+		}
+
+		response, err := folders.GetPaginatedFolders(req)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+		assert.Equal(t, 1, len(response.Folders))
+		assert.Empty(t, response.Token)
+	})
+
+	t.Run("Invalid Input - empty request", func(t *testing.T) {
+		response, err := folders.GetPaginatedFolders(nil)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+
+	t.Run("Invalid Input - empty OrgId", func(t *testing.T) {
+		req := &folders.PaginatedFetchFolderRequest{OrgID: uuid.Nil}
+		response, err := folders.GetPaginatedFolders(req)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 }
